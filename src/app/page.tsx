@@ -27,7 +27,7 @@ const MODELS = {
   sdxl: {
     id: "sdxl",
     name: "Stable Diffusion XL",
-    version: "ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
+    version: "stability-ai/sdxl:ac732df83cea7fff18b8472768c88ad041fa750ff7682a21affe81863cbe77e4",
     parameters: {
       width: 768,
       height: 768,
