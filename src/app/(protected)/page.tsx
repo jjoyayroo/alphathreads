@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/lib/context/AuthContext';
 import { uploadFile, addDocument } from '@/lib/firebase/firebaseUtils';
@@ -49,32 +47,18 @@ const MODELS = {
   }
 };
 
-export default function Home() {
-  const router = useRouter();
-  const { user, loading } = useAuth();
+export default function ImageGeneration() {
   const [prompt, setPrompt] = useState('');
   const [image, setImage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showModelInfo, setShowModelInfo] = useState(false);
   const [selectedModel, setSelectedModel] = useState<'flux' | 'sdxl' | 'ideogram'>('flux');
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/signin');
-    }
-  }, [user, loading, router]);
-
-  if (loading || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+  const { user } = useAuth();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setIsLoading(true);
+    setLoading(true);
     setError(null);
 
     try {
@@ -127,14 +111,14 @@ export default function Home() {
       console.error('Error generating image:', err);
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   }
 
   const currentModel = MODELS[selectedModel];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto">
       {/* Hero Section */}
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -200,10 +184,10 @@ export default function Home() {
           </div>
           <button
             type="submit"
-            disabled={isLoading || !prompt}
+            disabled={loading || !prompt}
             className="mt-4 w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors font-medium"
           >
-            {isLoading ? (
+            {loading ? (
               <span className="flex items-center justify-center">
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -218,7 +202,7 @@ export default function Home() {
         </form>
       </div>
 
-      {/* Error Display */}
+      {/* Generated Image Display */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
           <div className="flex">
@@ -235,7 +219,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* Generated Image Display */}
       {image && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="aspect-square relative overflow-hidden rounded-lg">
@@ -253,4 +236,4 @@ export default function Home() {
       )}
     </div>
   );
-}
+} 
